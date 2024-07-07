@@ -20,9 +20,16 @@ module Depslist
       parser = Dependabot::Gradle::FileParser.new(dependency_files: [file], source: nil)
       dependencies = parser.parse
 
+      dependency_list = []
       dependencies.each do |dep|
-        puts "#{dep.name} (#{dep.version})"
+        parts = dep.name.split(':')
+        dependency_list.push({
+                               'groupId' => parts[0],
+                               'artifactId' => parts[1],
+                               'version' => dep.version
+                             })
       end
+      puts dependency_list.to_json
     end
   end
 end
