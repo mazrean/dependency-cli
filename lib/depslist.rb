@@ -9,7 +9,6 @@ require 'jimson'
 
 module Depslist
   class Error < StandardError; end
-
   class Cli  < Thor
     desc "version", "Print version"
     def version
@@ -39,32 +38,34 @@ module Depslist
         input = $stdin.gets
         break if input.nil? || input.strip.empty?
 
-        response = server.handle_request(input)
+        response = server.handle_request(JSON.parse(input))
         if response.nil?
           response = server.error_response("Invalid request", input)
         end
-        puts response
+        puts response.to_json
         STDOUT.flush
       end
     end
-  end
 
-  class Handler
-    extend Jimson::Handler
-
-    def list(path)
-      analyze(path).map do |dep|
-        parts = dep.name.split(':')
-        {
-          'groupId' => parts[0],
-          'artifactId' => parts[1],
-          'version' => dep.version
-        }
+    private
+    class Handler < Cli
+      extend Jimson::Handler
+      def list(path)
+        dependency_list = []
+        analyze(path).each do |dep|
+          parts = dep.name.split(':')
+          dependency_list.push({
+                                 'groupId' => parts[0],
+                                 'artifactId' => parts[1],
+                                 'version' => dep.version
+                               })
+        end
+        dependency_list
       end
     end
-  end
 
-  class Analyzer
+    protected
+    desc "analyze", "Analyze dependencies"
     def analyze(path)
       file = Dependabot::DependencyFile.new(name: "build.gradle", directory: File.dirname(path), content:File.read(path))
       parser = Dependabot::Gradle::FileParser.new(dependency_files: [file], source: nil)

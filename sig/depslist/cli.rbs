@@ -1,15 +1,21 @@
 module Depslist
+  class Analyzer
+  end
+
   class Cli
     def version: -> void
     def list: (path: String?) -> void
     def server: -> void
-  end
 
-  class Handler
-    def list: (String) -> Array[{
-          "groupId" => String,
-          "artifactId" => String,
-          "version" => String,
-        }]
+    private
+    class Handler
+      def list: (String) -> Array[{
+            "groupId" => String,
+            "artifactId" => String,
+            "version" => String,
+          }]
+    end
+
+    def analyze: (path: String) -> Array[untyped]
   end
 end
