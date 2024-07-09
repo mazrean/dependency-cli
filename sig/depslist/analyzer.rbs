@@ -1,0 +1,5 @@
+module Depslist
+  class Analyzer
+    def analyze: (path: String) -> Array[untyped]
+  end
+end
