@@ -40,4 +40,5 @@ Gem::Specification.new do |spec|
   # guide at: https://bundler.io/guides/creating_gem.html
   spec.add_dependency "thor"
   spec.add_dependency "dependabot-gradle"
+  spec.add_dependency "logger"
 end
